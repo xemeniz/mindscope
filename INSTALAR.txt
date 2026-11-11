@@ -1,0 +1,17 @@
+MINDSCOPE · Dj Nané — instalar en Mac (Apple Silicon)
+
+1) Abre la app Terminal (Cmd + Espacio, escribe "Terminal", Enter).
+2) Pega este bloque entero y pulsa Enter (si estás en la carpeta Descargas):
+
+cd ~/Downloads/MINDSCOPE && mkdir -p ~/Library/Audio/Plug-Ins/VST3 ~/Library/Audio/Plug-Ins/Components && rm -rf ~/Library/Audio/Plug-Ins/VST3/MINDSCOPE.vst3 ~/Library/Audio/Plug-Ins/Components/MINDSCOPE.component /Applications/MINDSCOPE.app && cp -R MINDSCOPE.vst3 ~/Library/Audio/Plug-Ins/VST3/ && cp -R MINDSCOPE.component ~/Library/Audio/Plug-Ins/Components/ && cp -R MINDSCOPE.app /Applications/ && xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/MINDSCOPE.vst3 ~/Library/Audio/Plug-Ins/Components/MINDSCOPE.component /Applications/MINDSCOPE.app && killall -9 AudioComponentRegistrar 2>/dev/null; echo "INSTALADO OK"
+
+3) En Ableton: Preferencias > Plug-ins > "Rescan".
+4) En el navegador de Ableton: Plug-ins > Dj Nane > MINDSCOPE. Arrástralo al final del Master (después del limitador).
+
+Cómo se usa:
+ a) WAVE: la canción tal cual suena, en graves (rosa), medios (amarillo) y agudos (azul), como en los CDJ. 2, 4 u 8 segundos.
+ b) SPECTRUM: con 4.5 dB/oct una mezcla equilibrada se ve casi plana. Pasa el ratón para leer frecuencia, nota y dB. FREEZE (o la tecla F) lo congela.
+ c) LOUDNESS: short term mientras mezclas; integrado de toda la canción (se reinicia al darle a play, o con RESET). True peak a -1 dBTP o menos.
+ d) STEREO: LOW MONO OK = bombo y bajo en mono por debajo de 120 Hz. WIDE LOWS = hay estéreo en los graves.
+ e) Doble clic en el nombre de un panel para verlo en grande. Cmd+Z deshace los cambios de vista.
+ f) No toca el sonido: el audio sale exactamente igual que entra.

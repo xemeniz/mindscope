@@ -1,0 +1,57 @@
+name: Build MINDSCOPE (macOS)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: macos-15-intel   # los Mac arm64 de GitHub van saturados; compila igual para Apple Silicon
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar
+        run: cmake -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 2>&1 | tee build.log
+
+      - name: Compilar
+        run: cmake --build build --config Release -j4 2>&1 | tee -a build.log
+
+      - name: Empaquetar y firmar (ad-hoc)
+        run: |
+          ART="build/Mindscope_artefacts/Release"
+          OUT="dist/MINDSCOPE"
+          mkdir -p "$OUT"
+          cp -R "$ART/VST3/MINDSCOPE.vst3" "$OUT/"
+          cp -R "$ART/AU/MINDSCOPE.component" "$OUT/"
+          codesign --force --deep -s - "$OUT/MINDSCOPE.vst3"
+          codesign --force --deep -s - "$OUT/MINDSCOPE.component"
+          cp -R "$ART/Standalone/MINDSCOPE.app" "$OUT/"
+          codesign --force --deep -s - "$OUT/MINDSCOPE.app"
+          cp INSTALAR.txt "$OUT/"
+          cd dist && ditto -c -k --keepParent "MINDSCOPE" "MINDSCOPE-mac.zip"
+
+      - name: Publicar descarga
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER=$(sed -n 's/^project(Mindscope VERSION \([0-9.]*\)).*/\1/p' CMakeLists.txt)
+          gh release create "v${VER}-b${{ github.run_number }}" "dist/MINDSCOPE-mac.zip" \
+            --title "MINDSCOPE v${VER} (build ${{ github.run_number }})" \
+            --notes "Descarga MINDSCOPE-mac.zip y sigue INSTALAR.txt (Mac Apple Silicon)."
+
+      - name: Guardar log si falla
+        if: failure()
+        run: |
+          mkdir -p /tmp/logs && cp build.log "/tmp/logs/build-${{ github.run_number }}.log" 2>/dev/null || echo "sin log" > "/tmp/logs/build-${{ github.run_number }}.log"
+          tail -n 300 "/tmp/logs/build-${{ github.run_number }}.log" > /tmp/logs/latest.log
+          cd /tmp/logs && git init -q && git checkout -q -b build-logs && git add . \
+            && git -c user.name=mr-bot -c user.email=mr-bot@users.noreply.github.com commit -qm "log ${{ github.run_number }}" \
+            && git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" build-logs
