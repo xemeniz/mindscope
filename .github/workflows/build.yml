@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Mac de GitHub (macos-14, macos-15, macos-15-intel)'
+        default: 'macos-14'
 
 permissions:
   contents: write
@@ -14,7 +18,7 @@ defaults:
 
 jobs:
   build:
-    runs-on: macos-15-intel   # los Mac arm64 de GitHub van saturados; compila igual para Apple Silicon
+    runs-on: ${{ github.event.inputs.runner || 'macos-14' }}   # si una cola de GitHub va saturada se puede lanzar en otra
     steps:
       - uses: actions/checkout@v4
 
