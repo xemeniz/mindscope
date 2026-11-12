@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
     inputs:
       runner:
-        description: 'Mac de GitHub (macos-14, macos-15, macos-15-intel)'
-        default: 'macos-14'
+        description: 'Mac de GitHub (macos-15, macos-26, macos-15-intel)'
+        default: 'macos-15'
 
 permissions:
   contents: write
@@ -18,7 +18,7 @@ defaults:
 
 jobs:
   build:
-    runs-on: ${{ github.event.inputs.runner || 'macos-14' }}   # si una cola de GitHub va saturada se puede lanzar en otra
+    runs-on: ${{ github.event.inputs.runner || 'macos-15' }}   # macos-14 ya no existe en GitHub; si una cola va saturada, lanzarlo a mano en otra
     steps:
       - uses: actions/checkout@v4
 
